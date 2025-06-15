@@ -1,0 +1,94 @@
+/* General Body Styles */
+body {
+    background-color: #f0f2f5;
+    font-family: 'Roboto Mono', monospace;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Header Styles */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 20px;
+    width: 100%;
+    max-width: 700px;
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+header p {
+    font-size: 1.1em;
+    color: #666;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+/* New Style for the Daily Message */
+header #daily-message {
+    font-style: italic;
+    color: #0056b3;
+    font-weight: 700;
+    margin-top: 15px;
+    font-size: 1.2em;
+}
+
+/* Main Content & Status Display */
+main {
+    width: 100%;
+    max-width: 700px;
+}
+
+#status-container {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+#current-status {
+    padding: 40px 30px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #343a40; /* Changed color slightly for better contrast */
+    /* This transition makes the text fade in/out smoothly */
+    transition: opacity 0.5s ease-in-out;
+}
+
+#current-status.fade-out {
+    opacity: 0;
+}
+
+#timer-display {
+    background-color: #e9ecef;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #495057;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Footer Styles */
+footer {
+    margin-top: 50px;
+    font-size: 0.8em;
+    color: #999;
+}
