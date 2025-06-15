@@ -35,8 +35,6 @@ jobs:
     force: true
     condition: SUCCESSFUL
     optional: false
-  triggers:
-  - !BranchUpdateTrigger {}
   retryCondition: never
   maxRetries: 3
   retryDelay: 30
