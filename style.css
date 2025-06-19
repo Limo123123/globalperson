@@ -97,3 +97,25 @@ footer p1 {
     font-size: 0.6em;
     color: #999;
 }
+
+/* New style for the "waking up server" message */
+.loading-message {
+    color: #888;
+    font-size: 1.3em; /* A bit smaller than the main message */
+    font-style: italic;
+    font-weight: 400; /* Not bold */
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* The pulsing animation keyframes */
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}

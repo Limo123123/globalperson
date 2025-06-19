@@ -1,26 +1,22 @@
 'use-strict';
 
 // --- CONFIGURATION ---
-const SCHOOL_START_HOUR = 7;
-const SCHOOL_END_HOUR = 13;
-const HOME_ARRIVAL_HOUR = 14;
 const UPDATE_INTERVAL_MS = 120000; // 2 minutes
-const BACKEND_URL = 'https://glbp-nodejs.onrender.com/api/generate-message';
+const BACKEND_URL = 'https://glbp-nodejs.onrender.com/api/current-message'; // Make sure this is your correct Render URL
 
 // --- APPLICATION LOGIC ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Get DOM elements
     const statusElement = document.getElementById('current-status');
     const timerSpan = document.querySelector('#timer-display span');
-    const dailyMessageElement = document.getElementById('daily-message');
+    
+    let lastDisplayedMessage = '';
 
     function parseMarkdown(text) {
         const boldRegex = /\*\*(.+?)\*\*/g;
         return text.replace(boldRegex, '<strong>$1</strong>');
     }
-    
-    // This function no longer needs to call the AI, we can use a simple list
+
     function setDailyMessage() {
         const dailyGreetings = [
             "It's Sunday. The **Sunday Scaries** are setting in. Preparing for the week ahead.", "It's Monday. The week's final boss is fought on the first day. **Coffee is essential**.", "It's Tuesday. The **longest day** of the week, for some reason. We push through.", "It's Wednesday. Hump day! The peak of the mountain. It's **all downhill** from here.", "It's Thursday. The day of palpable **'pre-Friday' energy**. We are so close.", "It's **FRIDAY!** The golden day. Energy levels are high, patience is optional.", "It's Saturday. Day of rest, errands, and **absolutely zero** school thoughts. Hopefully.",
@@ -30,52 +26,47 @@ document.addEventListener('DOMContentLoaded', () => {
         dailyMessageElement.innerHTML = parsedDailyMessage;
     }
 
-    // This function now returns a simple string context for the AI
-    function getCurrentContext() {
-        const currentHour = new Date().getHours();
-        if (currentHour < SCHOOL_START_HOUR) return "early morning, getting ready for school";
-        if (currentHour < SCHOOL_END_HOUR) return "in the middle of a school day";
-        if (currentHour < HOME_ARRIVAL_HOUR) return "driving home from school";
-        if (currentHour < 22) return "at home in the evening, correcting work or relaxing";
-        return "late at night, trying to sleep";
-    }
-
-    // *** THIS IS THE NEW CORE FUNCTION ***
+    // *** MODIFIED UPDATE FUNCTION WITH WAITING MESSAGE LOGIC ***
     async function updateStatus() {
-        statusElement.classList.add('fade-out');
+        let loadingTimerId = null;
+
+        // Set a timer. If the fetch takes too long, this will run.
+        loadingTimerId = setTimeout(() => {
+            statusElement.innerHTML = `<p class="loading-message">Waking up the server... one moment.</p>`;
+        }, 2000); // Show message after 2 seconds of waiting
 
         try {
-            const context = getCurrentContext();
-            
-            // Fetch a new message from our Node.js backend
-            const response = await fetch(BACKEND_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ context: context }), // Send the context to the AI
-            });
+            const response = await fetch(BACKEND_URL);
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            // If we get here, the server has responded. Stop the timer.
+            clearTimeout(loadingTimerId);
+            
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            
+            const data = await response.json();
+
+            if (data.message !== lastDisplayedMessage) {
+                console.log("New message received from server:", data.message);
+                lastDisplayedMessage = data.message;
+                
+                const formattedMessage = parseMarkdown(data.message);
+
+                statusElement.classList.add('fade-out');
+                setTimeout(() => {
+                    // Make sure to remove the loading-message class if it was added
+                    statusElement.classList.remove('loading-message'); 
+                    statusElement.innerHTML = `<p>${formattedMessage}</p>`;
+                    statusElement.classList.remove('fade-out');
+                }, 500);
+            } else {
+                console.log("Message hasn't changed on the server yet. Waiting for next cycle.");
             }
 
-            const data = await response.json();
-            const formattedMessage = parseMarkdown(data.message);
-            
-            // Display the new message from the AI
-            setTimeout(() => {
-                statusElement.innerHTML = `<p>${formattedMessage}</p>`;
-                statusElement.classList.remove('fade-out');
-            }, 500);
-
         } catch (error) {
+            // Also stop the timer on error.
+            clearTimeout(loadingTimerId);
             console.error("Could not fetch new message:", error);
-            // Display an error message on the site if something goes wrong
-            setTimeout(() => {
-                statusElement.innerHTML = `<p>Connection to Global Person's mind is **offline**.</p>`;
-                statusElement.classList.remove('fade-out');
-            }, 500);
+            statusElement.innerHTML = `<p>Connection to Global Person's mind is **offline**.</p>`;
         }
     }
 
