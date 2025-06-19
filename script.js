@@ -1,6 +1,7 @@
 'use-strict';
 
 // --- CONFIGURATION ---
+const dailyMessageElement = document.getElementById('daily-message');
 const UPDATE_INTERVAL_MS = 120000; // 2 minutes
 const BACKEND_URL = 'https://glbp-nodejs.onrender.com/api/current-message'; // Make sure this is your correct Render URL
 
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         const today = new Date().getDay();
         const parsedDailyMessage = parseMarkdown(dailyGreetings[today]);
-        dailyMessageElement.innerHTML = parsedDailyMessage;
+        dailyMessageElement.HTML = parsedDailyMessage;
     }
 
     // *** MODIFIED UPDATE FUNCTION WITH WAITING MESSAGE LOGIC ***
