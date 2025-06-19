@@ -32,7 +32,7 @@ jobs:
     remoteUrl: https://github.com/Limo123123/globalperson
     userName: Limo123123
     passwordSecret: gh
-    force: true
+    force: false
     condition: SUCCESSFUL
     optional: false
   triggers:
